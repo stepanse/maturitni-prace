@@ -1,0 +1,5 @@
+- name: Deploy base roles
+  hosts: cernis-staging
+
+  roles:
+    - ssh
