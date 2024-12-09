@@ -1,0 +1,24 @@
+- name: Set custom MOTD
+  become: true
+  ansible.builtin.copy:
+    content: |
+      ·····················································································
+
+         (ﾉ◕ヮ◕)ﾉ*:･ﾟ✧ ~*~ VÍTEJTE! ~*~ ✧ﾟ･: *ヽ(◕ヮ◕ヽ)
+
+         Tento server provozuje EDUCAnet Plus, studentský projekt na škole
+         EDUCAnet - SŠ a ZŠ České Budějovice, s.r.o.
+         Správce: Štěpán Šebestian (stepan.sebestian@educanet.cz)
+
+         Z důvodu zajištění bezpečnosti a zlepšování výkonu je tento server monitorován.
+
+         Jakékoliv využití tohoto serveru mimo přímé zájmy EDUCAnet Plus
+         nebo jiného studentského projektu na EDUCAnetu České Budějovice
+         je bez předchozího souhlasu vedení EDUCAnet Plus zakázáno.
+
+      ·····················································································
+
+    dest: /etc/motd
+    owner: root
+    group: root
+    mode: "0644"
