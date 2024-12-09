@@ -26,7 +26,7 @@ TIMEZONEOPTS="-z Europe/Prague"
 PROXYOPTS=none
 
 # Use 1st mirror (CDN)
-APKREPOSOPTS="-1"f
+APKREPOSOPTS="-1"
 
 # Create initial admin user (see EDUCAnet Plus Bitwarden for SSH key)
 USEROPTS="-a -u -g audio,video,netdev spravce"
