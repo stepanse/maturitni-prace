@@ -82,9 +82,19 @@
     mode: "0644"
   notify: Restart sshd
 
-- name: Remove short Diffie-Hellman moduli # noqa no-changed-when
+- name: Ensure state directory exists
   become: true
-  ansible.builtin.shell: |
-    set -o pipefail && awk '$5 >= 3071' /etc/ssh/moduli | tee /etc/ssh/moduli.tmp
-    mv /etc/ssh/moduli.tmp /etc/ssh/moduli
+  ansible.builtin.file:
+    path: /var/state
+    state: directory
+    mode: "0644"
+
+- name: Remove short Diffie-Hellman moduli
+  become: true
+  ansible.builtin.shell:
+    cmd: |
+      set -o pipefail && awk '$5 >= 3071' /etc/ssh/moduli | tee /etc/ssh/moduli.tmp
+      mv /etc/ssh/moduli.tmp /etc/ssh/moduli
+      touch /var/state/remove_short_diffie_hellman_moduli
+    creates: /var/state/remove_short_diffie_hellman_moduli
   notify: Restart sshd
