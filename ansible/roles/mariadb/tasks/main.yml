@@ -1,0 +1,62 @@
+- name: Ensure MariaDB is installed
+  become: true
+  community.general.apk:
+    name:
+      - mariadb
+      - mariadb-client
+    state: present
+    update_cache: true
+
+- name: Setup MariaDB
+  become: true
+  ansible.builtin.command:
+    cmd: rc-service mariadb setup
+    creates: /var/lib/mysql/mysql
+
+- name: Ensure MariaDB is enabled and started
+  become: true
+  ansible.builtin.service:
+    name: mariadb
+    enabled: true
+    state: started
+
+- name: Ensure state directory exists
+  become: true
+  ansible.builtin.file:
+    path: /var/state
+    state: directory
+    mode: "0644"
+
+- name: Check if state file mariadb-installed exists
+  become: true
+  ansible.builtin.stat:
+    path: /var/state/mariadb_installed
+  register: mariadb_installed
+
+- name: Generate MariaDB root password
+  ansible.builtin.set_fact:
+    mariadb_root_password: "{{ lookup('password', '/dev/null/', length=64) }}"
+  when: not mariadb_installed.stat.exists
+
+- name: Display generated MariaDB root password
+  ansible.builtin.debug:
+    msg: "Generated password: {{ mariadb_root_password }}"
+  when: not mariadb_installed.stat.exists
+
+- name: Run mariadb-secure-installation
+  become: true
+  ansible.builtin.expect:
+    command: mariadb-secure-installation && touch /var/state/mariadb_installed
+    responses:
+      "Enter current password for root": ""
+      "Switch to unix_socket authentication": "n"
+      "Change the root password?": "y"
+      "New password": "{{ mariadb_root_password }}"
+      "Remove anonymous users": "y"
+      "Disallow root login remotely": "y"
+      "Remove test database and access to it?": "y"
+      "Reload privilege tables now": "y"
+  register: mariadb_secure_installation
+  changed_when: "'All done!' in mariadb_secure_installation.stdout_lines"
+  failed_when: "'... Failed!' in mariadb_secure_installation.stdout_lines or 'Access denied' in mariadb_secure_installation.stdout_lines"
+  when: not mariadb_installed.stat.exists
