@@ -4,3 +4,4 @@
   roles:
     - ssh
     - motd
+    - postgresql

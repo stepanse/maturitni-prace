@@ -1,0 +1,23 @@
+- name: Ensure PostgreSQL 17 is installed
+  become: true
+  community.general.apk:
+    name:
+      - postgresql17
+      - postgresql17-contrib
+      - postgresql17-openrc
+    state: present
+    update_cache: true
+
+- name: Initialize PostgreSQL
+  become: true
+  become_user: postgres
+  ansible.builtin.command:
+    cmd: initdb --locale=C.UTF-8 --encoding=UTF-8 --auth-local=peer --auth-host=scram-sha-256 -D /var/lib/postgresql/data
+    creates: /var/lib/postgresql/data/postgresql.conf
+
+- name: Ensure PostgreSQL is enabled and started
+  become: true
+  ansible.builtin.service:
+    name: postgresql
+    enabled: true
+    state: started
