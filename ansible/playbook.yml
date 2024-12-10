@@ -2,6 +2,7 @@
   hosts: cernis-staging
 
   roles:
+    - install_pkgs
     - ssh
     - motd
     - postgresql

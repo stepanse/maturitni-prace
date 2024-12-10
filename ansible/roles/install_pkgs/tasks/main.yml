@@ -1,0 +1,8 @@
+- name: Ensure base packages installed
+  become: true
+  community.general.apk:
+    name:
+      - py3-pexpect
+      - vim
+    state: present
+    update_cache: true
