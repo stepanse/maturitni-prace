@@ -3,6 +3,7 @@
   community.general.apk:
     name:
       - py3-pexpect
+      - py3-requests
       - vim
     state: present
     update_cache: true
