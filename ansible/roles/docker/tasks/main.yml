@@ -1,0 +1,22 @@
+- name: Ensure community repo is enabled
+  become: true
+  ansible.builtin.replace:
+    path: /etc/apk/repositories
+    regexp: "^#" # Match all commented lines, community is by default commented, assumes /etc/apk/repositories has not been modified
+    replace: "" # Uncomment
+
+- name: Ensure Docker and Docker Compose is installed
+  become: true
+  community.general.apk:
+    name:
+      - docker
+      - docker-cli-compose
+    state: present
+    update_cache: true
+
+- name: Ensure Docker service is enabled and started
+  become: true
+  ansible.builtin.service:
+    name: docker
+    enabled: true
+    state: started

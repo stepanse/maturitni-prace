@@ -7,3 +7,4 @@
     - motd
     - postgresql
     - mariadb
+    - docker
