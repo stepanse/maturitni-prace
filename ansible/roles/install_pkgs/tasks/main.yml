@@ -2,6 +2,7 @@
   become: true
   community.general.apk:
     name:
+      - acl # Needed for Ansible to become another user than root
       - py3-pexpect
       - py3-requests
       - vim
