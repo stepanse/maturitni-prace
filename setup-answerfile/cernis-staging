@@ -2,7 +2,7 @@
 KEYMAPOPTS="cz cz-qwerty"
 
 # Set hostname
-HOSTNAMEOPTS="cernis-staging.infra.educanetplus.cz"
+HOSTNAMEOPTS="cernis-staging.educanetplus.cz"
 
 # Contents of /etc/network/interfaces
 # DHCP on eth0
