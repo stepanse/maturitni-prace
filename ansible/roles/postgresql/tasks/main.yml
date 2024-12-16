@@ -21,11 +21,29 @@
     path: /var/state/postgresql_installed
   register: postgresql_installed
 
+- name: Generate PostgreSQL root password
+  ansible.builtin.set_fact:
+    postgresql_root_password: "{{ lookup('password', '/dev/null/', length=64) }}"
+  when: not postgresql_installed.stat.exists
+
+- name: Display generated PostgreSQL root password
+  ansible.builtin.debug:
+    msg: "Generated password: {{ postgresql_root_password }}"
+  when: not postgresql_installed.stat.exists
+
+- name: Write out generated password to temporary file # PostgreSQL's initdb only supports setting passwords from a file or an interactive prompt
+  ansible.builtin.copy:
+    content: "{{ postgresql_root_password }}"
+    dest: /tmp/postgresql_root_password
+    owner: root
+    group: root
+    mode: "0600"
+
 - name: Initialize PostgreSQL
   become: true
   become_user: postgres
   ansible.builtin.command:
-    cmd: initdb --locale=C.UTF-8 --encoding=UTF-8 --auth-local=peer --auth-host=scram-sha-256 -D /var/lib/postgresql/data
+    cmd: initdb --locale=C.UTF-8 --encoding=UTF-8 --auth-local=peer --auth-host=scram-sha-256 --username=root --pwfile=/tmp/postgresql_root_password -D /var/lib/postgresql/data
     creates: /var/lib/postgresql/data/postgresql.conf
   when: not postgresql_installed.stat.exists
 
