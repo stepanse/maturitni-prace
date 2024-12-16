@@ -36,8 +36,8 @@
   ansible.builtin.copy:
     content: "{{ postgresql_root_password }}"
     dest: /tmp/postgresql_root_password
-    owner: root
-    group: root
+    owner: postgres
+    group: postgres
     mode: "0600"
 
 - name: Initialize PostgreSQL
