@@ -52,6 +52,7 @@
       "Switch to unix_socket authentication": "n"
       "Change the root password?": "y"
       "New password": "{{ mariadb_root_password }}"
+      "Re-enter new password": "{{ mariadb_root_password }}"
       "Remove anonymous users": "y"
       "Disallow root login remotely": "y"
       "Remove test database and access to it?": "y"
