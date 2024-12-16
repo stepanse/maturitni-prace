@@ -55,6 +55,14 @@
     creates: /var/lib/postgresql/data/postgresql.conf
   when: not postgresql_installed.stat.exists
 
+- name: Create postgresql_installed state file
+  ansible.builtin.file:
+    path: /var/state/postgresql_installed
+    state: touch
+    owner: root
+    group: root
+    mode: "0644"
+
 - name: Ensure PostgreSQL is enabled and started
   become: true
   ansible.builtin.service:
