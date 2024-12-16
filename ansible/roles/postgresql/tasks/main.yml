@@ -8,12 +8,26 @@
     state: present
     update_cache: true
 
+- name: Ensure state directory exists
+  become: true
+  ansible.builtin.file:
+    path: /var/state
+    state: directory
+    mode: "0644"
+
+- name: Check if state file postgresql-installed exists
+  become: true
+  ansible.builtin.stat:
+    path: /var/state/postgresql_installed
+  register: postgresql_installed
+
 - name: Initialize PostgreSQL
   become: true
   become_user: postgres
   ansible.builtin.command:
     cmd: initdb --locale=C.UTF-8 --encoding=UTF-8 --auth-local=peer --auth-host=scram-sha-256 -D /var/lib/postgresql/data
     creates: /var/lib/postgresql/data/postgresql.conf
+  when: not postgresql_installed.stat.exists
 
 - name: Ensure PostgreSQL is enabled and started
   become: true
