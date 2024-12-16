@@ -32,6 +32,7 @@
   when: not postgresql_installed.stat.exists
 
 - name: Write out generated password to temporary file # PostgreSQL's initdb only supports setting passwords from a file or an interactive prompt
+  become: true
   ansible.builtin.copy:
     content: "{{ postgresql_root_password }}"
     dest: /tmp/postgresql_root_password
@@ -56,6 +57,7 @@
   when: not postgresql_installed.stat.exists
 
 - name: Create postgresql_installed state file
+  become: true
   ansible.builtin.file:
     path: /var/state/postgresql_installed
     state: touch
