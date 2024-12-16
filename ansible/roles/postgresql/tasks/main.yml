@@ -43,7 +43,15 @@
   become: true
   become_user: postgres
   ansible.builtin.command:
-    cmd: initdb --locale=C.UTF-8 --encoding=UTF-8 --auth-local=peer --auth-host=scram-sha-256 --username=root --pwfile=/tmp/postgresql_root_password -D /var/lib/postgresql/data
+    argv:
+      - initdb
+      - --locale=C.UTF-8
+      - --encoding=UTF-8
+      - --auth-local=peer
+      - --auth-host=scram-sha-256
+      - --username=root
+      - --pwfile=/tmp/postgresql_root_password
+      - --pgdata=/var/lib/postgresql/data
     creates: /var/lib/postgresql/data/postgresql.conf
   when: not postgresql_installed.stat.exists
 
