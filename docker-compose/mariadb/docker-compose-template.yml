@@ -3,7 +3,7 @@ services:
     image: mariadb:lts
     restart: always
     environment:
-      MARIADB_ROOT_PASSWORD: "{{ mariadb_root_password }}"
+      MARIADB_ROOT_PASSWORD: "{{ lookup('ansible.builtin.password', 'credentials/mariadb_root', length=64, chars=['ascii_leters', 'digits']) }}"
       MARIADB_AUTO_UPGRADE: true
     volumes:
       - mariadb:/var/lib/mysql

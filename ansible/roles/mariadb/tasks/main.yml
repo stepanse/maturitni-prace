@@ -14,24 +14,6 @@
     appends: true
     state: present
 
-- name: Ensure state directory exists
-  become: true
-  ansible.builtin.file:
-    path: /var/state
-    state: directory
-    mode: "0644"
-
-- name: Check if state file mariadb_installed exists
-  become: true
-  ansible.builtin.stat:
-    path: /var/state/mariadb_installed
-  register: mariadb_installed
-
-- name: Generate MariaDB root password
-  ansible.builtin.set_fact:
-    mariadb_root_password: "{{ lookup('ansible.builtin.password', 'credentials/mariadb_root', length=64, chars=['ascii_leters', 'digits']) }}"
-  when: not mariadb_installed.stat.exists
-
 - name: Template MariaDB docker-compose.yml to server
   become: true
   ansible.builtin.template:
@@ -40,7 +22,6 @@
     owner: root
     group: root
     mode: "0644"
-  when: not mariadb_installed.stat.exists
 
 - name: Ensure MariaDB is started
   become: true
