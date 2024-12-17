@@ -1,9 +1,17 @@
+- name: Ensure community repo is enabled
+  become: true
+  ansible.builtin.replace:
+    path: /etc/apk/repositories
+    regexp: "^#" # Match all commented lines, community is by default commented, assumes /etc/apk/repositories has not been modified
+    replace: "" # Uncomment
+
 - name: Ensure base packages installed
   become: true
   community.general.apk:
     name:
       - acl # Needed for Ansible to become another user than root
       - py3-pexpect
+      - py3-psycopg2 # Needed for Ansible's community.postgresql.*
       - py3-requests
       - vim
     state: present
