@@ -8,3 +8,4 @@
     - motd
     - docker
     - traefik
+    - authentik

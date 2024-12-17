@@ -1,0 +1,32 @@
+- name: Ensure /srv/compose/authentik exists
+  become: true
+  ansible.builtin.file:
+    path: /srv/compose/authentik
+    state: directory
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Copy Authentik docker-compose.yml to server
+  become: true
+  ansible.builtin.copy:
+    src: ../../../../docker-compose/authentik/docker-compose.yml
+    dest: /srv/compose/authentik/docker-compose.yml
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Template Authentik .env to server
+  become: true
+  ansible.builtin.template:
+    src: ../../../../docker-compose/authentik/template.env
+    dest: /srv/compose/authentik/.env
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Ensure Authentik is started
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: /srv/compose/authentik/
+    state: present # equivalent to docker compose up
