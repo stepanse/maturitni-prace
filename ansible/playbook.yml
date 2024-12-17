@@ -5,7 +5,7 @@
     - install_pkgs
     - ssh
     - motd
-    - postgresql
     - docker
     - traefik
     - mariadb
+    - postgresql

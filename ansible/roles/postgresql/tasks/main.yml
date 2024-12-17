@@ -1,75 +1,30 @@
-- name: Ensure PostgreSQL 17 is installed
-  become: true
-  community.general.apk:
-    name:
-      - postgresql17
-      - postgresql17-contrib
-      - postgresql17-openrc
-    state: present
-    update_cache: true
-
-- name: Ensure state directory exists
+- name: Ensure /srv/compose/postgresql exists
   become: true
   ansible.builtin.file:
-    path: /var/state
+    path: /srv/compose/postgresql
     state: directory
-    mode: "0644"
-
-- name: Check if state file postgresql-installed exists
-  become: true
-  ansible.builtin.stat:
-    path: /var/state/postgresql_installed
-  register: postgresql_installed
-
-- name: Generate PostgreSQL root password
-  ansible.builtin.set_fact:
-    postgresql_root_password: "{{ lookup('password', '/dev/null/', length=64) }}"
-  when: not postgresql_installed.stat.exists
-
-- name: Display generated PostgreSQL root password
-  ansible.builtin.debug:
-    msg: "Generated password: {{ postgresql_root_password }}"
-  when: not postgresql_installed.stat.exists
-
-- name: Write out generated password to temporary file # PostgreSQL's initdb only supports setting passwords from a file or an interactive prompt
-  become: true
-  ansible.builtin.copy:
-    content: "{{ postgresql_root_password }}"
-    dest: /tmp/postgresql_root_password
-    owner: postgres
-    group: postgres
+    owner: root
+    group: root
     mode: "0600"
-  when: not postgresql_installed.stat.exists
 
-- name: Initialize PostgreSQL
+- name: Ensure Docker network postgresql exists
   become: true
-  become_user: postgres
-  ansible.builtin.command:
-    argv:
-      - initdb
-      - --locale=C.UTF-8
-      - --encoding=UTF-8
-      - --auth-local=peer
-      - --auth-host=scram-sha-256
-      - --username=root
-      - --pwfile=/tmp/postgresql_root_password
-      - --pgdata=/var/lib/postgresql/data
-    creates: /var/lib/postgresql/data/postgresql.conf
-  when: not postgresql_installed.stat.exists
+  community.docker.docker_network:
+    name: postgresql
+    appends: true
+    state: present
 
-- name: Create postgresql_installed state file
+- name: Template PostgreSQL docker-compose.yml to server
   become: true
-  ansible.builtin.file:
-    path: /var/state/postgresql_installed
-    state: touch
+  ansible.builtin.template:
+    src: ../../../../docker-compose/postgresql/docker-compose-template.yml
+    dest: /srv/compose/postgresql/docker-compose.yml
     owner: root
     group: root
     mode: "0644"
-  when: not postgresql_installed.stat.exists
 
-- name: Ensure PostgreSQL is enabled and started
+- name: Ensure PostgreSQL is started
   become: true
-  ansible.builtin.service:
-    name: postgresql
-    enabled: true
-    state: started
+  community.docker.docker_compose_v2:
+    project_src: /srv/compose/postgresql/
+    state: present # equivalent to docker compose up
