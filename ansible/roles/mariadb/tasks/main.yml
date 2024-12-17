@@ -29,12 +29,7 @@
 
 - name: Generate MariaDB root password
   ansible.builtin.set_fact:
-    mariadb_root_password: "{{ lookup('password', '/dev/null/', length=64) }}"
-  when: not mariadb_installed.stat.exists
-
-- name: Display generated MariaDB root password
-  ansible.builtin.debug:
-    msg: "Generated password: {{ mariadb_root_password }}"
+    mariadb_root_password: "{{ lookup('ansible.builtin.password', 'credentials/mariadb_root', length=64, chars=['ascii_leters', 'digits']) }}"
   when: not mariadb_installed.stat.exists
 
 - name: Template MariaDB docker-compose.yml to server
