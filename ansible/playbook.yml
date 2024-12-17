@@ -8,5 +8,3 @@
     - motd
     - docker
     - traefik
-    - mariadb
-    - postgresql

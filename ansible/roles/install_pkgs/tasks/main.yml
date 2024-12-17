@@ -10,8 +10,6 @@
   community.general.apk:
     name:
       - acl # Needed for Ansible to become another user than root
-      - py3-pexpect
-      - py3-psycopg2 # Needed for Ansible's community.postgresql.*
       - py3-requests
       - vim
     state: present
