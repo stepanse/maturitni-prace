@@ -1,0 +1,12 @@
+- name: Ensure group sshusers exists
+  become: true
+  ansible.builtin.group:
+    name: sshusers
+    state: present
+
+- name: Ensure user spravce is in group sshusers
+  become: true
+  ansible.builtin.user:
+    name: spravce
+    groups: sshusers
+    append: true

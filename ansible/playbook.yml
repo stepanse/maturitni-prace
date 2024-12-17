@@ -3,6 +3,7 @@
 
   roles:
     - install_pkgs
+    - users
     - ssh
     - motd
     - docker
