@@ -1,24 +1,18 @@
-- name: Ensure MariaDB is installed
+- name: Ensure /srv/compose/mariadb exists
   become: true
-  community.general.apk:
-    name:
-      - mariadb
-      - mariadb-client
-    state: present
-    update_cache: true
+  ansible.builtin.file:
+    path: /srv/compose/mariadb
+    state: directory
+    owner: root
+    group: root
+    mode: "0600"
 
-- name: Setup MariaDB
+- name: Ensure Docker network mariadb exists
   become: true
-  ansible.builtin.command:
-    cmd: rc-service mariadb setup
-    creates: /var/lib/mysql/mysql
-
-- name: Ensure MariaDB is enabled and started
-  become: true
-  ansible.builtin.service:
+  community.docker.docker_network:
     name: mariadb
-    enabled: true
-    state: started
+    appends: true
+    state: present
 
 - name: Ensure state directory exists
   become: true
@@ -27,7 +21,7 @@
     state: directory
     mode: "0644"
 
-- name: Check if state file mariadb-installed exists
+- name: Check if state file mariadb_installed exists
   become: true
   ansible.builtin.stat:
     path: /var/state/mariadb_installed
@@ -43,21 +37,18 @@
     msg: "Generated password: {{ mariadb_root_password }}"
   when: not mariadb_installed.stat.exists
 
-- name: Run mariadb-secure-installation
+- name: Template MariaDB docker-compose.yml to server
   become: true
-  ansible.builtin.expect:
-    command: mariadb-secure-installation && touch /var/state/mariadb_installed
-    responses:
-      "Enter current password for root": ""
-      "Switch to unix_socket authentication": "n"
-      "Change the root password?": "y"
-      "New password": "{{ mariadb_root_password }}"
-      "Re-enter new password": "{{ mariadb_root_password }}"
-      "Remove anonymous users": "y"
-      "Disallow root login remotely": "n"
-      "Remove test database and access to it?": "y"
-      "Reload privilege tables now": "y"
-  register: mariadb_secure_installation
-  changed_when: "'All done!' in mariadb_secure_installation.stdout_lines"
-  failed_when: "'... Failed!' in mariadb_secure_installation.stdout_lines or 'Access denied' in mariadb_secure_installation.stdout_lines"
+  ansible.builtin.template:
+    src: ../../../../docker-compose/mariadb/docker-compose-template.yml
+    dest: /srv/compose/mariadb/docker-compose.yml
+    owner: root
+    group: root
+    mode: "0644"
   when: not mariadb_installed.stat.exists
+
+- name: Ensure MariaDB is started
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: /srv/compose/mariadb/
+    state: present # equivalent to docker compose up

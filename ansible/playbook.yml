@@ -6,6 +6,6 @@
     - ssh
     - motd
     - postgresql
-    - mariadb
     - docker
     - traefik
+    - mariadb
