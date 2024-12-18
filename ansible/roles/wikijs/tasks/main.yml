@@ -1,0 +1,23 @@
+- name: Ensure /srv/compose/wikijs exists
+  become: true
+  ansible.builtin.file:
+    path: /srv/compose/wikijs
+    state: directory
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Template Wiki.js docker-compose.yml to server
+  become: true
+  ansible.builtin.template:
+    src: ../../../../docker-compose/wikijs/docker-compose-template.yml
+    dest: /srv/compose/wikijs/docker-compose.yml
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Ensure Wiki.js is started
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: /srv/compose/wikijs/
+    state: present # equivalent to docker compose up
