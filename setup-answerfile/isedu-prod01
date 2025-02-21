@@ -1,0 +1,45 @@
+# Use Czech QWERTZ layout
+KEYMAPOPTS="cz cz"
+
+# Set hostname
+HOSTNAMEOPTS="isedu-prod01.educanetplus.cz"
+
+# Contents of /etc/network/interfaces
+# DHCP on eth0
+INTERFACESOPTS="auto lo
+iface lo inet loopback
+
+auto eth0
+iface eth0 inet dhcp
+    hostname isedu-prod01
+"
+
+# Use Cloudflare DNS
+DNSOPTS="1.1.1.1 1.0.0.1"
+
+# Set timezone to Europe/Prague
+TIMEZONEOPTS="-z Europe/Prague"
+
+# no proxy
+PROXYOPTS=none
+
+# Use 1st mirror (CDN)
+APKREPOSOPTS="-1"
+
+# Create initial admin user (see EDUCAnet Plus Bitwarden for SSH key)
+USEROPTS="-a -u -g audio,video,netdev spravce"
+USERSSHKEY="ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIM/HtznKcL9yQYhSbDVJaQ3TNUegJzDm4II9b22mKMN4 stepanse@mys03"
+
+# Install Openssh
+SSHDOPTS="openssh"
+
+# Use openntpd
+NTPOPTS="openntpd"
+
+# Use /dev/sda as a sys disk
+DISKOPTS="-m sys /dev/sda"
+
+# Setup in /media/cdrom
+LBUOPTS="/media/cdrom"
+APKCACHEOPTS="/media/cdrom/cache"
+
