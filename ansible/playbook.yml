@@ -1,5 +1,5 @@
 - name: Deploy base roles
-  hosts: cernis-staging
+  hosts: all
 
   roles:
     - install_pkgs
