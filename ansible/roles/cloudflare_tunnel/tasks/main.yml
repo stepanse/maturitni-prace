@@ -1,0 +1,76 @@
+- name: Download latest cloudflared binary from GitHub
+  become: true
+  ansible.builtin.get_url:
+    url: https://github.com/cloudflare/cloudflared/releases/latest/download/cloudflared-linux-amd64
+    dest: /usr/local/bin/cloudflared
+    mode: '0755'
+
+- name: Add cloudflared service user
+  become: true
+  ansible.builtin.user:
+    name: cloudflared
+    state: present
+    system: true
+
+- name: Create directory /etc/cloudflared and ensure the service user can write to it
+  ansible.builtin.file:
+    path: /etc/cloudflared
+    state: directory
+    owner: cloudflared
+    group: cloudflared
+    mode: '0700'
+
+- name: Check if cloudflared is already logged in
+  ansible.builtin.stat:
+    path: /etc/cloudflared/cert.pem
+  register: cloudflared_logged_in
+
+- name: Ask user to authorize cloudflared
+  ansible.builtin.pause:
+    prompt: |
+      ··································································
+
+        Manual intervention required!
+
+        Please, log in to the server and run the command
+
+        cloudflared tunnel login --cred-file /etc/cloudflared/cert.pem
+
+        as user cloudflared.
+
+      ··································································
+  when: not cloudflared_logged_in.stat.exists
+
+- name: Create locally managed Cloudflare Tunnel
+  become: true
+  ansible.builtin.command: cloudflared tunnel create educanetplus
+  register: cf_tunnel_create_output
+  changed_when: cf_tunnel_create_output.rc = 0
+
+- name: Add cloudflared-tunnel service
+  become: true
+  ansible.builtin.copy:
+    content: |
+      #!/sbin/openrc-run
+
+      name=cloudflared-tunnel
+      command=/usr/local/bin/cloudflared tunnel --config /etc/cloudflared/tunnel_config.yml run educanetplus
+      command_user=cloudflared:cloudflared
+      command_background="yes"
+      pidfile=/run/${RC_SVCNAME}.pid
+
+      depend() {
+          need net
+          after firewall
+      }
+    dest: /etc/init.d/cloudflared-tunnel
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Start cloudflared-tunnel service
+  become: true
+  ansible.builtin.service:
+    name: cloudflared-tunnel
+    enabled: true
+    state: started
