@@ -13,14 +13,15 @@
     system: true
 
 - name: Create directory /etc/cloudflared and ensure the service user can write to it
+  become: true
   ansible.builtin.file:
     path: /etc/cloudflared
     state: directory
     owner: cloudflared
-    group: cloudflared
     mode: '0700'
 
 - name: Check if cloudflared is already logged in
+  become: true
   ansible.builtin.stat:
     path: /etc/cloudflared/cert.pem
   register: cloudflared_logged_in
