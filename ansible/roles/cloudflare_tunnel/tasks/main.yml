@@ -47,6 +47,7 @@
   ansible.builtin.command: cloudflared tunnel create educanetplus
   register: cf_tunnel_create_output
   changed_when: cf_tunnel_create_output.rc == 0
+  ignore_errors: true
 
 - name: Add cloudflared-tunnel service
   become: true
