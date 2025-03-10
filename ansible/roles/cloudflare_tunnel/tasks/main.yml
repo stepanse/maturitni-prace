@@ -29,17 +29,17 @@
 - name: Ask user to authorize cloudflared
   ansible.builtin.pause:
     prompt: |
-      ··································································
+      ········································································
 
         Manual intervention required!
 
         Please, log in to the server and run the command
 
-        cloudflared tunnel login --cred-file /etc/cloudflared/cert.pem
+        TUNNEL_CRED_FILE=/etc/cloudflared/cert.pem cloudflared tunnel login
 
         as user cloudflared.
 
-      ··································································
+      ········································································
   when: not cloudflared_logged_in.stat.exists
 
 - name: Create locally managed Cloudflare Tunnel
