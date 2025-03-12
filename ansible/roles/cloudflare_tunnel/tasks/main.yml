@@ -47,7 +47,7 @@
   ansible.builtin.command: cloudflared tunnel create educanetplus
   register: cf_tunnel_create_output
   changed_when: cf_tunnel_create_output.rc == 0
-  ignore_errors: true
+  ignore_errors: true # cloudflared returns 1 when the tunnel already exists, which would make Ansible interrupt the play
 
 - name: Add cloudflared-tunnel service
   become: true
