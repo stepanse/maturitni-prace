@@ -9,6 +9,8 @@ ingress:
   - hostname: "*.educanetplus.cz"
     service: http://localhost:80
     no-tls-verify: true
+  - hostname: sso.educanetplus.cz
+    service: http://localhost:8001
   - hostname: wiki.educanetplus.cz
     service: http://localhost:8002
   - service: http_status:404

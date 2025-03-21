@@ -49,14 +49,8 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-    networks:
-      - rev_proxy
-      - default
-    labels:
-      - traefik.enable=true
-      - traefik.http.services.sso.loadbalancer.server.port=9000
-      - traefik.http.routers.sso.rule=Host(`sso.educanetplus.cz`)
-      - traefik.http.routers.sso.tls.certresolver=letsencrypt
+    ports:
+      - 8001:9000
   worker:
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2024.10.5}
     restart: unless-stopped
