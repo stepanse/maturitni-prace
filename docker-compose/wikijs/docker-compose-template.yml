@@ -26,11 +26,8 @@ services:
     networks:
       - rev_proxy
       - default
-    labels:
-      - traefik.enable=true
-      - traefik.http.services.wiki.loadbalancer.server.port=3000
-      - traefik.http.routers.wiki.rule=Host(`wiki.educanetplus.cz`)
-      - traefik.http.routers.wiki.tls.certresolver=letsencrypt
+    ports:
+      - 8002:3000
 
 volumes:
   db-data:
