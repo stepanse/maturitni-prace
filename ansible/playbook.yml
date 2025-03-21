@@ -8,6 +8,5 @@
     - motd
     - cloudflare_tunnel
     - docker
-    - traefik
     - authentik
     - wikijs

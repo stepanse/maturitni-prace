@@ -23,9 +23,6 @@ services:
       DB_PASS: "{{ lookup('ansible.builtin.password', 'credentials/postgresql_wikijs', length=64, chars=['ascii_leters', 'digits']) }}"
       DB_NAME: wiki
     restart: unless-stopped
-    networks:
-      - rev_proxy
-      - default
     ports:
       - 8002:3000
 
