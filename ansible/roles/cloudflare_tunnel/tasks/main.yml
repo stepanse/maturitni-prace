@@ -63,20 +63,8 @@
 - name: Copy config for educanetplus tunnel
   become: true
   become_user: cloudflared
-  ansible.builtin.copy:
-    content: |
-      tunnel: {{ cf_tunnel_educanetplus_id }}
-      credentials-file: /etc/cloudflared/{{ cf_tunnel_educanetplus_id }}.json
-      ingress:
-        - hostname: {{ inventory_hostname }}.educanetplus.cz
-          service: ssh://localhost:22
-        - hostname: educanetplus.cz
-          service: http://localhost:80
-          no-tls-verify: true
-        - hostname: "*.educanetplus.cz"
-          service: http://localhost:80
-          no-tls-verify: true
-        - service: http_status:404
+  ansible.builtin.template:
+    src: ../../../../files/etc/cloudflared/educanetplus-conf-template.yml
     dest: /etc/cloudflared/educanetplus-conf.yml
     owner: cloudflared
     group: nogroup
