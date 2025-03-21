@@ -3,12 +3,6 @@ credentials-file: /etc/cloudflared/{{ cf_tunnel_educanetplus_id }}.json
 ingress:
   - hostname: {{ inventory_hostname }}.educanetplus.cz
     service: ssh://localhost:22
-  - hostname: educanetplus.cz
-    service: http://localhost:80
-    no-tls-verify: true
-  - hostname: "*.educanetplus.cz"
-    service: http://localhost:80
-    no-tls-verify: true
   - hostname: sso.educanetplus.cz
     service: http://localhost:8001
   - hostname: wiki.educanetplus.cz
