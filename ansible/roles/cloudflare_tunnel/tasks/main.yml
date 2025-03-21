@@ -92,7 +92,8 @@
       #!/sbin/openrc-run
 
       name=cloudflared-tunnel
-      command=/usr/local/bin/cloudflared tunnel --config /etc/cloudflared/educanetplus-conf.yml run educanetplus
+      command="/usr/local/bin/cloudflared"
+      command_args="tunnel --config /etc/cloudflared/educanetplus-conf.yml run educanetplus"
       command_user=cloudflared:cloudflared
       command_background="yes"
       pidfile=/run/${RC_SVCNAME}.pid
