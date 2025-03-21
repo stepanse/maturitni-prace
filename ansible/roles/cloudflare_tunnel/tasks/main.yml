@@ -29,17 +29,24 @@
 - name: Ask user to authorize cloudflared
   ansible.builtin.pause:
     prompt: |
-      ········································································
+      ·························································································
 
         Manual intervention required!
 
-        Please, log in to the server and run the command
+        1) Make sure there are no conflicting DNS records (A, AAAA, CNAME, ...) in Cloudflare
+            - {{ inventory_hostname }}.educanetplus.cz
+            - educanetplus.cz
+            - *.educanetplus.cz
+        
+        2) Make sure there are no conflicting tunnel names in Cloudflare Zero Trust
+            - educanetplus
+        
+        3) Run the following command as the user cloudflared
+            cloudflared tunnel login
 
-        TUNNEL_CRED_FILE=/etc/cloudflared/cert.pem cloudflared tunnel login
-
-        as user cloudflared.
-
-      ········································································
+        4) Move the output (cert.pem) to /etc/cloudflared/cert.pem
+          
+      ·························································································
   when: not cloudflared_logged_in.stat.exists
 
 - name: Create locally managed Cloudflare Tunnel
