@@ -43,11 +43,59 @@
   when: not cloudflared_logged_in.stat.exists
 
 - name: Create locally managed Cloudflare Tunnel
-  become: cloudflared
-  ansible.builtin.command: cloudflared tunnel create educanetplus
+  become: true
+  become_user: cloudflared
+  ansible.builtin.command: env TUNNEL_CRED_FILE=/etc/cloudflared/cert.pem cloudflared tunnel create educanetplus
   register: cf_tunnel_create_output
   changed_when: cf_tunnel_create_output.rc == 0
   ignore_errors: true # cloudflared returns 1 when the tunnel already exists, which would make Ansible interrupt the play
+
+- name: Get educanetplus tunnel info
+  become: true
+  become_user: cloudflared
+  ansible.builtin.command: cloudflared tunnel list -n educanetplus -o json
+  register: cf_tunnel_info_educanetplus
+
+- name: Set educanetplus tunnel ID into Ansible fact
+  ansible.builtin.set_fact:
+    cf_tunnel_educanetplus_id: "{{ cf_tunnel_info_educanetplus.stdout | ansible.builtin.from_json | ansible.builtin.json_query('[0].id') }}"
+
+- name: Copy config for educanetplus tunnel
+  become: true
+  become_user: cloudflared
+  ansible.builtin.copy:
+    content: |
+      tunnel: {{ cf_tunnel_educanetplus_id }}
+      credentials-file: /etc/cloudflared/{{ cf_tunnel_educanetplus_id }}.json
+      ingress:
+        - hostname: {{ inventory_hostname }}.educanetplus.cz
+          service: ssh://localhost:22
+        - hostname: educanetplus.cz
+          service: http://localhost:80
+          no-tls-verify: true
+        - hostname: "*.educanetplus.cz"
+          service: http://localhost:80
+          no-tls-verify: true
+        - service: http_status:404
+    dest: /etc/cloudflared/educanetplus-conf.yml
+    owner: cloudflared
+    group: nogroup
+    mode: 0755
+
+- name: Add @ route to tunnel
+  become: true
+  become_user: cloudflared
+  ansible.builtin.command: cloudflared tunnel route dns {{ cf_tunnel_educanetplus_id }} educanetplus.cz
+
+- name: Add wildcard route to tunnel
+  become: true
+  become_user: cloudflared
+  ansible.builtin.command: cloudflared tunnel route dns {{ cf_tunnel_educanetplus_id }} *.educanetplus.cz
+
+- name: Add SSH route to tunnel
+  become: true
+  become_user: cloudflared
+  ansible.builtin.command: cloudflared tunnel route dns {{ cf_tunnel_educanetplus_id }} {{ inventory_hostname }}.educanetplus.cz
 
 - name: Add cloudflared-tunnel service
   become: true
@@ -56,7 +104,7 @@
       #!/sbin/openrc-run
 
       name=cloudflared-tunnel
-      command=/usr/local/bin/cloudflared tunnel --config /etc/cloudflared/tunnel_config.yml run educanetplus
+      command=/usr/local/bin/cloudflared tunnel --config /etc/cloudflared/educanetplus-conf.yml run educanetplus
       command_user=cloudflared:cloudflared
       command_background="yes"
       pidfile=/run/${RC_SVCNAME}.pid
