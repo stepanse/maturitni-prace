@@ -1,0 +1,23 @@
+- name: Ensure /srv/compose/uptimekuma exists
+  become: true
+  ansible.builtin.file:
+    path: /srv/compose/uptimekuma
+    state: directory
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Copy Uptime Kuma docker-compose.yml to server
+  become: true
+  ansible.builtin.template:
+    src: ../../../../docker-compose/uptimekuma/docker-compose.yml
+    dest: /srv/compose/uptimekuma/docker-compose.yml
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Ensure Uptime Kuma is started
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: /srv/compose/uptimekuma/
+    state: present # equivalent to docker compose up
