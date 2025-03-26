@@ -3,6 +3,7 @@
 
   roles:
     - install_pkgs
+    - cronie
     - users
     - ssh
     - motd

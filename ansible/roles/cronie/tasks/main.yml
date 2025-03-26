@@ -1,0 +1,21 @@
+- name: Ensure cronie is installed
+  become: true
+  community.general.apk:
+    name:
+      - cronie
+    state: present
+    update_cache: true
+
+- name: Ensure BusyBox crond is disabled
+  become: true
+  ansible.builtin.service:
+    name: crond
+    state: stopped
+    enabled: false
+
+- name: Ensure cronie is enabled
+  become: true
+  ansible.builtin.service:
+    name: cronie
+    state: started
+    enabled: true
