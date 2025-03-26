@@ -7,9 +7,88 @@
     - users
     - ssh
     - motd
+    - rclone_setup
+    - {role: roles-ansible.restic, tags: restic, become: true}
     - cloudflare_tunnel
     - docker
     - authentik
     - wikijs
     - uptimekuma
     - xibo
+  vars:
+    restic_no_log: false
+    restic_create_schedule: true
+    restic_repos:
+      remote_bak:
+        location: "rclone:remote_bak:IT/Zálohy/{{ inventory_hostname }}"
+        password: "{{ lookup('ansible.builtin.password', 'credentials/restic_remote_bak', length=64, chars=['ascii_leters', 'digits']) }}"
+        init: true
+    restic_backups:
+      home:
+        name: home
+        repo: remote_bak
+        src: /home/
+        scheduled: true
+        schedule_hour: 1
+        schedule_minute: 0 # backup runs at 01:00
+        keep_daily: 7
+        mail_on_error: true
+        mail_address: "it@educanetplus.cz"
+      docker_volumes:
+        name: docker_volumes
+        repo: remote_bak
+        src: /var/lib/docker/volumes
+        scheduled: true
+        schedule_hour: 1
+        schedule_minute: 0 # backup runs at 01:00
+        keep_daily: 7
+        keep_weekly: 4
+        keep_monthly: 12
+        keep_yearly: 2
+        mail_on_error: true
+        mail_address: "it@educanetplus.cz"
+      authentik_db:
+        name: authentik_db
+        repo: remote_bak
+        stdin: true
+        stdin_cmd: "docker exec authentik-postgresql-1 env PGPASSWORD={{ lookup('ansible.builtin.password', 'credentials/postgresql_authentik', length=64, chars=['ascii_leters', 'digits']) }} pg_dump -Uauthentik -w authentik"
+        stdin_filename: authentik.sql
+        scheduled: true
+        schedule_hour: 1
+        schedule_minute: 0 # backup runs at 01:00
+        keep_daily: 7
+        keep_weekly: 4
+        keep_monthly: 12
+        keep_yearly: 2
+        mail_on_error: true
+        mail_address: "it@educanetplus.cz"
+      wikijs_db:
+        name: wikijs_db
+        repo: remote_bak
+        stdin: true
+        stdin_cmd: "docker exec wikijs-db-1 env PGPASSWORD={{ lookup('ansible.builtin.password', 'credentials/postgresql_wikijs', length=64, chars=['ascii_leters', 'digits']) }} pg_dump -Uwikijs -w wiki"
+        stdin_filename: wikijs.sql
+        scheduled: true
+        schedule_hour: 1
+        schedule_minute: 0 # backup runs at 01:00
+        keep_daily: 7
+        keep_weekly: 4
+        keep_monthly: 12
+        keep_yearly: 2
+        mail_on_error: true
+        mail_address: "it@educanetplus.cz"
+      xibo_db:
+        name: xibo_db
+        repo: remote_bak
+        stdin: true
+        stdin_cmd: "docker exec xibo-cms-db-1 mysqldump --user=cms --password={{ lookup('ansible.builtin.password', 'credentials/mysql_xibo', length=64, chars=['ascii_leters', 'digits']) }} cms"
+        stdin_filename: xibo.sql
+        scheduled: true
+        schedule_hour: 1
+        schedule_minute: 0 # backup runs at 01:00
+        keep_daily: 7
+        keep_weekly: 4
+        keep_monthly: 12
+        keep_yearly: 2
+        mail_on_error: true
+        mail_address: "it@educanetplus.cz"
