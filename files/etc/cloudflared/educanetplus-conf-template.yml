@@ -9,4 +9,6 @@ ingress:
     service: http://localhost:8002
   - hostname: status.educanetplus.cz
     service: http://localhost:8003
+  - hostname: xibo.educanetplus.cz
+    service: http://localhost:8004
   - service: http_status:404

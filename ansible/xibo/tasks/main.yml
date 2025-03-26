@@ -1,0 +1,32 @@
+- name: Ensure /srv/compose/xibo exists
+  become: true
+  ansible.builtin.file:
+    path: /srv/compose/xibo
+    state: directory
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Copy Xibo docker-compose.yml to server
+  become: true
+  ansible.builtin.copy:
+    src: ../../../docker-compose/xibo/docker-compose.yml
+    dest: /srv/compose/xibo/docker-compose.yml
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Template Xibo .env to server
+  become: true
+  ansible.builtin.template:
+    src: ../../../docker-compose/xibo/config-template.env
+    dest: /srv/compose/xibo/config.env
+    owner: root
+    group: root
+    mode: "0600"
+
+- name: Ensure Xibo is started
+  become: true
+  community.docker.docker_compose_v2:
+    project_src: /srv/compose/xibo/
+    state: present # equivalent to docker compose up
