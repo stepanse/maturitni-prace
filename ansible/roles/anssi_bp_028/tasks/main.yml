@@ -1,0 +1,6 @@
+- name: "[R5] Configuring a password on the bootloader"
+  ansible.builtin.lineinfile:
+    path: /etc/update-extlinux.conf
+    regexp: "^(password=)"
+    line: 'password="$6$ZL32zaE7f9GonTlT$3MwnUsZqEQkrmJUbDJhKwNHxIkq2Fio9W3bemBLRg3ukZ46/j3WWhMbjh4KWVGYvSN0oI6iLP5XLquNhU4cbs0"'
+  notify: update-extlinux
