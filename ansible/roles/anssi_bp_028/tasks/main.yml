@@ -1,4 +1,5 @@
 - name: "[R5] Configuring a password on the bootloader"
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/update-extlinux.conf
     regexp: "^(password=)"
@@ -6,6 +7,7 @@
   notify: Run update-extlinux
 
 - name: "Modify kernel options - [R8, R11]"
+  become: true
   ansible.builtin.lineinfile:
     path: /etc/update-extlinux.conf
     regexp: "^(default_kernel_opts=).*"
@@ -15,6 +17,7 @@
     - Reboot alert
 
 - name: "[R9] Configuring the kernel options"
+  become: true
   ansible.builtin.copy:
     content: |
       #
@@ -53,6 +56,7 @@
   notify: Reload sysctl
 
 - name: "[R11] Configuration option of the Yama LSM"
+  become: true
   ansible.builtin.copy:
     content: kernel.yama.ptrace_scope = 1
     dest: /etc/sysctl.d/10_anssi-bp-028_r11.conf
@@ -62,6 +66,7 @@
   notify: Reload sysctl
 
 - name: "[R12] IPv4 configuration options"
+  become: true
   ansible.builtin.copy:
     content: |
       # Mitigation of the dispersion effect of the kernel JIT at the cost of a
@@ -135,6 +140,7 @@
   notify: Reload sysctl
 
 - name: "[R13] Disabling IPv6"
+  become: true
   ansible.builtin.copy:
     content: |
       net.ipv6.conf.default.disable_ipv6 =1
@@ -147,6 +153,7 @@
   notify: Reload sysctl
 
 - name: "[R14] File system configuration options"
+  become: true
   ansible.builtin.copy:
     content: |
       # Disable coredump creation for setuid executables
