@@ -56,3 +56,75 @@
     owner: root
     group: root
     mode: "0644"
+
+- name: "[R12] IPv4 configuration options"
+  ansible.builtin.copy:
+    content: |
+      # Mitigation of the dispersion effect of the kernel JIT at the cost of a
+      # compromise on the associated performance.
+      net.core.bpf_jit_harden = 2
+      # Consider as invalid the packets received from outside whose source
+      # is the 127/8 network.
+      net.ipv4.conf.all.accept_local = 0
+      # Deny receipt of ICMP redirect packet. The suggested setting of this
+      # option is to be strongly considered in the case of routers which must not
+      # depend on an external element to determine the calculation of a route. Even
+      # for non -router machines , this setting protects against
+      # traffic diversions with ICMP redirect packets.
+      net.ipv4.conf.all.accept_redirects = 0
+      net.ipv4.conf.default.accept_redirects = 0
+      net.ipv4.conf.all.secure_redirects = 0
+      net.ipv4.conf.default.secure_redirects = 0
+      net.ipv4.conf.all.shared_media = 0
+      net.ipv4.conf.default.shared_media = 0
+      # Deny the source routing header information supplied by the
+      # packet to determine its route.
+      net.ipv4.conf.all.accept_source_route = 0
+      net.ipv4.conf.default.accept_source_route = 0
+      # Prevent the Linux kernel from handling the ARP table globally. By default ,
+      # it can respond to an ARP request from an X interface with information
+      # from an interface Y. This behavior is problematic for routers and
+      # equipment of a high availability system (VRRP , etc.).
+      net.ipv4.conf.all.arp_filter = 1
+      # Respond to ARP requests only if the source and destination addresses are on
+      # the same network and come from the same interface on which the packet was received.
+      # Note that the configuration of this option is to be studied according to the
+      # use case.
+      net.ipv4.conf.all.arp_ignore = 2
+      # Refuse the routing of packets whose source or destination address is that
+      # of the local loopback. This prohibits the transmission of packets with
+      # source network 127/8.
+      net.ipv4.conf.all.route_localnet = 0
+      # Ignore gratuitous ARP requests. This configuration is
+      # effective against ARP poisoning attacks but only applicable
+      # in association with one or more controlled ARP proxies.
+      # This option can be problematic on networks with devices
+      # in a high availability setup (VRRP , etc.).
+      net.ipv4.conf.all.drop_gratuitous_arp = 1
+      # Check that the source address of packets received on a given interface
+      # would have been contacted via this same interface. Otherwise , the packet
+      # is ignored. Depending on usage , the value 1 can increase the verification to
+      # all the interfaces , when the device is a router for which the calculation of
+      # routes is dynamic. The interested reader is referred to RFC3704 for all
+      # details for this feature.
+      net.ipv4.conf.default.rp_filter = 1
+      net.ipv4.conf.all.rp_filter = 1
+      # This option should only be set to 1 in the case of a router because for such
+      # equipment sending ICMP redirect is normal behaviour. A non -routing
+      # equipment has no reason to receive a flow for which it is not the recipient
+      # and therefore to send an ICMP redirect packet.
+      net.ipv4.conf.default.send_redirects = 0
+      net.ipv4.conf.all.send_redirects = 0
+      # Ignore responses that do not comply with RFC 1122
+      net.ipv4.icmp_ignore_bogus_error_responses = 1
+      # Increase the range for ephemeral ports
+      net.ipv4.ip_local_port_range = 32768 65535
+      # RFC 1337
+      net.ipv4.tcp_rfc1337 = 1
+      # Use SYN cookies to prevent SYN flood type attacks.
+      net.ipv4.tcp_syncookies = 1
+
+    dest: /etc/sysctl.d/10_anssi-bp-028_r12.conf
+    owner: root
+    group: root
+    mode: "0644"
