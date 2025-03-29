@@ -12,7 +12,7 @@
   register: rclone_list_remote_bak
   changed_when: false # never changes anything
   # rclone returns code 1 when the repo does not exist, which would cause Ansible to stop execution
-  ignore_errors: true 
+  ignore_errors: true
 
 - name: Wait for user to configure remote_bak repo
   ansible.builtin.pause:
@@ -26,6 +26,6 @@
         rclone config
 
         For more info, see docs at https://rclone.org/drive/
-          
+
       ·······················································
   when: rclone_list_remote_bak.rc == 1

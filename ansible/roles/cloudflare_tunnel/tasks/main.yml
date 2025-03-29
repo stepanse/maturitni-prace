@@ -37,15 +37,15 @@
             - {{ inventory_hostname }}.educanetplus.cz
             - educanetplus.cz
             - *.educanetplus.cz
-        
+
         2) Make sure there are no conflicting tunnel names in Cloudflare Zero Trust
             - educanetplus
-        
+
         3) Run the following command as the user cloudflared
             cloudflared tunnel login
 
         4) Move the output (cert.pem) to /etc/cloudflared/cert.pem
-          
+
       ·························································································
   when: not cloudflared_logged_in.stat.exists
 
@@ -61,6 +61,7 @@
   become: true
   become_user: cloudflared
   ansible.builtin.command: cloudflared tunnel list -n educanetplus -o json
+  changed_when: false # listing existing tunnels never changes anything
   register: cf_tunnel_info_educanetplus
 
 - name: Set educanetplus tunnel ID into Ansible fact
@@ -75,7 +76,7 @@
     dest: /etc/cloudflared/educanetplus-conf.yml
     owner: cloudflared
     group: nogroup
-    mode: 0755
+    mode: "0755"
 
 - name: Add @ route to tunnel
   become: true

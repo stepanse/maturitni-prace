@@ -1,22 +1,22 @@
-- name: update-extlinux
+- name: Run update-extlinux
   become: true
   ansible.builtin.command: update-extlinux
-  changed: true # update-extlinux always updates the syslinux config, we also wouldn't even be calling this handler if nothing changed
+  changed_when: true # update-extlinux always updates the syslinux config, we also wouldn't even be calling this handler if nothing changed
 
 - name: Reboot alert
   ansible.builtin.pause: # We want the user to acknowledge this alert explicitly
     prompt: |
       ············································································
-      
+
         Some implemented measures require a system reboot!
         Please, make sure to reboot the system after playbook execution is done!
-      
+
       ············································································
 
-- name: sysctl reload
+- name: Reload sysctl
   become: true
   ansible.builtin.command: sysctl -p
-  changed: true # always reloads the sysctl config, we also wouldn't even be calling this handler if nothing changed
+  changed_when: true # always reloads the sysctl config, we also wouldn't even be calling this handler if nothing changed
 
 - name: Remount opt
   become: true

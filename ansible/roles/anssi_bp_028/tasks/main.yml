@@ -3,7 +3,7 @@
     path: /etc/update-extlinux.conf
     regexp: "^(password=)"
     line: 'password="$6$ZL32zaE7f9GonTlT$3MwnUsZqEQkrmJUbDJhKwNHxIkq2Fio9W3bemBLRg3ukZ46/j3WWhMbjh4KWVGYvSN0oI6iLP5XLquNhU4cbs0"'
-  notify: update-extlinux
+  notify: Run update-extlinux
 
 - name: "Modify kernel options - [R8, R11]"
   ansible.builtin.lineinfile:
@@ -11,7 +11,7 @@
     regexp: "^(default_kernel_opts=).*"
     line: 'default_kernel_opts="quiet rootfstype=ext4 page_poison=on pti=on slab_nomerge=yes slub_debug=FZP spec_store_bypass_disable=seccomp spectre_v2=on mce=0 page_alloc.shuffle=1 lsm=lockdown,landlock,yama"'
   notify:
-    - update-extlinux
+    - Run update-extlinux
     - Reboot alert
 
 - name: "[R9] Configuring the kernel options"
@@ -45,12 +45,12 @@
       # Completely shut down the system if the Linux kernel behaves
       # unexpectedly
       kernel.panic_on_oops = 1
-    
+
     dest: /etc/sysctl.d/10_anssi-bp-028_r8.conf
     owner: root
     group: root
     mode: "0644"
-  notify: sysctl reload
+  notify: Reload sysctl
 
 - name: "[R11] Configuration option of the Yama LSM"
   ansible.builtin.copy:
@@ -59,7 +59,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: sysctl reload
+  notify: Reload sysctl
 
 - name: "[R12] IPv4 configuration options"
   ansible.builtin.copy:
@@ -132,19 +132,19 @@
     owner: root
     group: root
     mode: "0644"
-  notify: sysctl reload
+  notify: Reload sysctl
 
 - name: "[R13] Disabling IPv6"
   ansible.builtin.copy:
     content: |
       net.ipv6.conf.default.disable_ipv6 =1
       net.ipv6.conf.all.disable_ipv6 =1
-    
+
     dest: /etc/sysctl.d/10_anssi-bp-028_r13.conf
     owner: root
     group: root
     mode: "0644"
-  notify: sysctl reload
+  notify: Reload sysctl
 
 - name: "[R14] File system configuration options"
   ansible.builtin.copy:
@@ -171,7 +171,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: sysctl reload
+  notify: Reload sysctl
 
 - name: "[R28] Typical partitioning - /opt"
   become: true
