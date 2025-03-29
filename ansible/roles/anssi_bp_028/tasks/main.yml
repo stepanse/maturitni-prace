@@ -5,11 +5,11 @@
     line: 'password="$6$ZL32zaE7f9GonTlT$3MwnUsZqEQkrmJUbDJhKwNHxIkq2Fio9W3bemBLRg3ukZ46/j3WWhMbjh4KWVGYvSN0oI6iLP5XLquNhU4cbs0"'
   notify: update-extlinux
 
-- name: "[R8] Configuring the memory options"
+- name: "Modify kernel options - [R8, R11]"
   ansible.builtin.lineinfile:
     path: /etc/update-extlinux.conf
     regexp: "^(default_kernel_opts=).*"
-    line: 'default_kernel_opts="quiet rootfstype=ext4 page_poison=on pti=on slab_nomerge=yes slub_debug=FZP spec_store_bypass_disable=seccomp spectre_v2=on mce=0 page_alloc.shuffle=1"'
+    line: 'default_kernel_opts="quiet rootfstype=ext4 page_poison=on pti=on slab_nomerge=yes slub_debug=FZP spec_store_bypass_disable=seccomp spectre_v2=on mce=0 page_alloc.shuffle=1 lsm=lockdown,landlock,yama"'
   notify: update-extlinux
 
 - name: "[R9] Configuring the kernel options"
@@ -45,6 +45,14 @@
       kernel.panic_on_oops = 1
     
     dest: /etc/sysctl.d/10_anssi-bp-028_r8.conf
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: "[R11] Configuration option of the Yama LSM"
+  ansible.builtin.copy:
+    content: kernel.yama.ptrace_scope = 1
+    dest: /etc/sysctl.d/10_anssi-bp-028_r11.conf
     owner: root
     group: root
     mode: "0644"
