@@ -50,7 +50,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Reboot alert
+  notify: sysctl reload
 
 - name: "[R11] Configuration option of the Yama LSM"
   ansible.builtin.copy:
@@ -59,7 +59,7 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Reboot alert
+  notify: sysctl reload
 
 - name: "[R12] IPv4 configuration options"
   ansible.builtin.copy:
@@ -132,4 +132,4 @@
     owner: root
     group: root
     mode: "0644"
-  notify: Reboot alert
+  notify: sysctl reload
