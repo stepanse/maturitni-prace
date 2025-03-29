@@ -10,7 +10,9 @@
     path: /etc/update-extlinux.conf
     regexp: "^(default_kernel_opts=).*"
     line: 'default_kernel_opts="quiet rootfstype=ext4 page_poison=on pti=on slab_nomerge=yes slub_debug=FZP spec_store_bypass_disable=seccomp spectre_v2=on mce=0 page_alloc.shuffle=1 lsm=lockdown,landlock,yama"'
-  notify: update-extlinux
+  notify:
+    - update-extlinux
+    - Reboot alert
 
 - name: "[R9] Configuring the kernel options"
   ansible.builtin.copy:
@@ -48,6 +50,7 @@
     owner: root
     group: root
     mode: "0644"
+  notify: Reboot alert
 
 - name: "[R11] Configuration option of the Yama LSM"
   ansible.builtin.copy:
@@ -56,6 +59,7 @@
     owner: root
     group: root
     mode: "0644"
+  notify: Reboot alert
 
 - name: "[R12] IPv4 configuration options"
   ansible.builtin.copy:
@@ -128,3 +132,4 @@
     owner: root
     group: root
     mode: "0644"
+  notify: Reboot alert

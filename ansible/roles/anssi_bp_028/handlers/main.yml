@@ -1,0 +1,15 @@
+- name: update-extlinux
+  become: true
+  ansible.builtin.command: update-extlinux
+  changed: true # update-extlinux always updates the syslinux config, we also wouldn't even be calling this handler if nothing changed
+
+- name: Reboot alert
+  ansible.builtin.pause: # We want the user to acknowledge this alert explicitly
+    prompt: |
+      ············································································
+      
+        Some implemented measures require a system reboot!
+        Please, make sure to reboot the system after playbook execution is done!
+      
+      ············································································
+      
