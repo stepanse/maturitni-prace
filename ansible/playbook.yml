@@ -3,6 +3,7 @@
 
   roles:
     - install_pkgs
+    - anssi_bp_028
     - cronie
     - users
     - ssh
