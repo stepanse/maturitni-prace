@@ -17,3 +17,39 @@
   become: true
   ansible.builtin.command: sysctl -p
   changed: true # always reloads the sysctl config, we also wouldn't even be calling this handler if nothing changed
+
+- name: Remount opt
+  become: true
+  ansible.posix.mount:
+    path: /opt
+    state: remounted
+
+- name: Remount tmp
+  become: true
+  ansible.posix.mount:
+    path: /tmp
+    state: remounted
+
+- name: Remount srv
+  become: true
+  ansible.posix.mount:
+    path: /srv
+    state: remounted
+
+- name: Remount home
+  become: true
+  ansible.posix.mount:
+    path: /home
+    state: remounted
+
+- name: Remount usr
+  become: true
+  ansible.posix.mount:
+    path: /usr
+    state: remounted
+
+- name: Remount var
+  become: true
+  ansible.posix.mount:
+    path: /usr
+    state: remounted

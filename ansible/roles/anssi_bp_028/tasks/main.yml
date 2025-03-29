@@ -172,3 +172,73 @@
     group: root
     mode: "0644"
   notify: sysctl reload
+
+- name: "[R28] Typical partitioning - /opt"
+  become: true
+  ansible.posix.mount:
+    path: /opt
+    src: /opt
+    opts: "bind,nosuid,nodev"
+    state: present
+    fstype: none
+  notify: Remount opt
+
+- name: "[R28] Typical partitioning - /tmp"
+  become: true
+  ansible.posix.mount:
+    path: /tmp
+    src: tmpfs
+    opts: "nosuid,nodev,noexec"
+    state: present
+    fstype: tmpfs
+  notify: Remount tmp
+
+- name: "[R28] Typical partitioning - /srv"
+  become: true
+  ansible.posix.mount:
+    path: /srv
+    src: /srv
+    opts: "bind,nosuid,nodev"
+    state: present
+    fstype: none
+  notify: Remount srv
+
+- name: "[R28] Typical partitioning - /home"
+  become: true
+  ansible.posix.mount:
+    path: /home
+    src: /home
+    opts: "bind,nosuid,nodev"
+    state: present
+    fstype: none
+  notify: Remount home
+
+- name: "[R28] Typical partitioning - /proc"
+  become: true
+  ansible.posix.mount:
+    path: /proc
+    src: proc
+    opts: "nodev,nosuid,noexec,hidepid=2"
+    state: present
+    fstype: proc
+
+- name: "[R28] Typical partitioning - /usr"
+  become: true
+  ansible.posix.mount:
+    path: /usr
+    src: /usr
+    opts: "bind,nodev"
+    state: present
+    fstype: none
+  notify: Remount usr
+
+
+- name: "[R28] Typical partitioning - /var" # also covers /var/log and /var/tmp because we just use bind mounts, not seperate partitions
+  become: true
+  ansible.posix.mount:
+    path: /var
+    src: /var
+    opts: "bind,nosuid,nodev,noexec"
+    state: present
+    fstype: none
+  notify: Remount var
