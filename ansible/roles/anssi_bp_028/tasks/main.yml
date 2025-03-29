@@ -11,4 +11,40 @@
     regexp: "^(default_kernel_opts=).*"
     line: 'default_kernel_opts="quiet rootfstype=ext4 page_poison=on pti=on slab_nomerge=yes slub_debug=FZP spec_store_bypass_disable=seccomp spectre_v2=on mce=0 page_alloc.shuffle=1"'
   notify: update-extlinux
+
+- name: "[R9] Configuring the kernel options"
+  ansible.builtin.copy:
+    content: |
+      #
+      # ANSSI BP-028-EN v2 RECOMMENDATION R9: CONFIGURING THE KERNEL OPTIONS
+      #
+      # Restrict access to the dmesg buffer (equivalent to
+      # CONFIG_SECURITY_DMESG_RESTRICT=y)
+      kernel.dmesg_restrict = 1
+      # Hide kernel addresses in /proc and various other interfaces ,
+      # including from privileged users
+      kernel.kptr_restrict = 2
+      # Explicitly specify the process id space supported by the kernel ,
+      # 65536 being an example value
+      kernel.pid_max = 65536
+      # Restrict the use of the perf subsystem
+      kernel.perf_cpu_time_max_percent = 1
+      kernel.perf_event_max_sample_rate = 1
+      # Prohibit unprivileged access to the perf_event_open () system call.
+      # With a value greater than 2, we impose the possession of
+      # CAP_SYS_ADMIN , in order to collect the perf events.
+      kernel.perf_event_paranoid = 2
+      # Activate ASLR
+      kernel.randomize_va_space = 2
+      # Disable Magic System Request Key combinations
+      kernel.sysrq = 0
+      # Restrict kernel BPF usage to privileged users
+      kernel.unprivileged_bpf_disabled = 1
+      # Completely shut down the system if the Linux kernel behaves
+      # unexpectedly
+      kernel.panic_on_oops = 1
     
+    dest: /etc/sysctl.d/10_anssi-bp-028_r8.conf
+    owner: root
+    group: root
+    mode: "0644"
