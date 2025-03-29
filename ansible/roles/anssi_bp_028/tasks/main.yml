@@ -145,3 +145,30 @@
     group: root
     mode: "0644"
   notify: sysctl reload
+
+- name: "[R14] File system configuration options"
+  ansible.builtin.copy:
+    content: |
+      # Disable coredump creation for setuid executables
+      # Note that it is possible to disable all coredumps with the
+      # configuration CONFIG_COREDUMP=n
+      fs.suid_dumpable = 0
+      # Available from version 4.19 of the Linux kernel , allows to prohibit
+      # opening FIFOs and "regular" files that are not owned by the user
+      # in sticky folders for everyone to write.
+      fs.protected_fifos = 2
+      fs.protected_regular = 2
+      # Restrict the creation of symbolic links to files that the user
+      # owns. This option is part of the vulnerability prevention mechanisms
+      # of the Time of Check - Time of Use (Time of Check -
+      # Time of Use)
+      fs.protected_symlinks = 1
+      # Restrict the creation of hard links to files whose user is
+      # owner. This sysctl is part of the prevention mechanisms against
+      # Time of Check - Time of Use vulnerabilities , but also against the
+      # possibility of retaining access to obsolete files
+      fs.protected_hardlinks = 1
+    owner: root
+    group: root
+    mode: "0644"
+  notify: sysctl reload
